@@ -64,7 +64,7 @@ class Minesweeper():
                     self.Tiles[b-self.BlocksPerRow] += 1    
                     self.Tiles[b-self.BlocksPerRow+1] += 1
                     self.Tiles[b-self.BlocksPerRow-1] += 1
-        
+
         for b in self.Bombs:
             self.Tiles[b] = 'X'
         
@@ -73,7 +73,9 @@ class Minesweeper():
             self.canvas.create_line(self.BlockSize * (i+1), 0, self.BlockSize * (i+1), self.height, fill="#51504a")
             self.canvas.create_line(0, self.BlockSize * (i+1), self.width, self.BlockSize * (i+1), fill="#51504a")
 
-        self.canvas.bind("<ButtonRelease-1>",self.callGeneticAlgorithm)
+        self.canvas.bind("<Control-ButtonPress-1>",self.callGeneticAlgorithm)
+        self.canvas.bind("<Control-ButtonPress-3>",self.resetGame)
+        self.canvas.bind("<ButtonRelease-1>",self.revealTile)
         self.canvas.bind("<ButtonRelease-3>",self.markTile)
         self.root.mainloop()
         
@@ -85,10 +87,10 @@ class Minesweeper():
     def showTile(self, CurrentTile, Vno, Hno):
         global BlocksPerRow
         global openTiles
-        self.canvas.create_rectangle((Hno-1)*self.BlockSize, (Vno-1)*self.BlockSize,Hno*self.BlockSize, Vno*self.BlockSize, fill="#51504a")
         if self.Tiles[CurrentTile] == 0:
             if CurrentTile in self.openTiles:
                 return
+            self.canvas.create_rectangle((Hno-1)*self.BlockSize, (Vno-1)*self.BlockSize,Hno*self.BlockSize, Vno*self.BlockSize, fill="#51504a")
             self.CurrentTiles[CurrentTile] = 50
             self.openTiles.append(CurrentTile)
             self.score += 1
@@ -103,17 +105,21 @@ class Minesweeper():
         elif self.Tiles[CurrentTile] == 'X':
             if CurrentTile in self.openTiles:
                 return
+            self.canvas.create_rectangle((Hno-1)*self.BlockSize, (Vno-1)*self.BlockSize,Hno*self.BlockSize, Vno*self.BlockSize, fill="#51504a")
             self.openTiles.append(CurrentTile)
-            #print("GameOver : {} {}".format(self.score,self.CurrentTiles))
             self.IsPlaying = False
-            self.canvas.unbind("<ButtonRelease-1>")
             self.canvas.unbind("<ButtonRelease-3>")
+            self.canvas.unbind("<Control-ButtonPress-1>")
+            self.canvas.unbind("<Control-ButtonRelease-3>")
+            self.canvas.unbind("<ButtonRelease-1>")
+            #print("GameOver : {} {}".format(self.score,self.CurrentTiles))
             #self.showAllTiles()
             #self.resetGame()
             return
         else:
             if CurrentTile in self.openTiles:
                 return
+            self.canvas.create_rectangle((Hno-1)*self.BlockSize, (Vno-1)*self.BlockSize,Hno*self.BlockSize, Vno*self.BlockSize, fill="#51504a")
             self.openTiles.append(CurrentTile)
             self.CurrentTiles[CurrentTile] = self.Tiles[CurrentTile] * 100
             self.canvas.create_text(25 + (Hno-1)*self.BlockSize, 25 + (Vno-1)*self.BlockSize,fill="#828282",font="Times 30 bold",
@@ -130,7 +136,6 @@ class Minesweeper():
         Vno = int(cy/self.BlockSize) + 1
         Hno = int(cx/self.BlockSize) + 1
         CurrentTile = self.BlocksPerRow*(Vno-1)+Hno-1
-        #print(CurrentTile,Hno,Vno)
         self.showTile(CurrentTile, Vno, Hno)
 
     def getCurrentTiles(self):
@@ -156,7 +161,7 @@ class Minesweeper():
     def getScore(self):
         return self.score
 
-    def resetGame(self):
+    def resetGame(self,event=None):
         self.canvas.create_rectangle(0, 0, self.width, self.height, fill="#f7f0bb")
         self.IsPlaying = True
         self.score = 0
@@ -210,8 +215,9 @@ class Minesweeper():
             self.canvas.create_line(self.BlockSize * (i+1), 0, self.BlockSize * (i+1), self.height, fill="#51504a")
             self.canvas.create_line(0, self.BlockSize * (i+1), self.width, self.BlockSize * (i+1), fill="#51504a")
 
-        #self.canvas.bind("<ButtonRelease-1>",self.revealTile)
-        self.canvas.bind("<ButtonRelease-1>",self.callGeneticAlgorithm)
+        self.canvas.bind("<Control-ButtonPress-1>",self.callGeneticAlgorithm)
+        self.canvas.bind("<Control-ButtonPress-3>",self.resetGame)
+        self.canvas.bind("<ButtonRelease-1>",self.revealTile)
         self.canvas.bind("<ButtonRelease-3>",self.markTile)
 
 B = Minesweeper()

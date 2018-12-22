@@ -116,7 +116,7 @@ class GeneticAlgorithm:
             self.selectionCrossoverAndMutation()
             self.Generation += 1
             print('Gneration: {}'.format(self.Generation))
-            if self.Generation % 25 == 0:
+            if self.Generation % 10 == 0:
                 for i in range(self.Size):
                     with open('Objects/Population.Obj'+str(i), 'wb') as config_dictionary_file:
                         pickle.dump(self.Population[i], config_dictionary_file)
